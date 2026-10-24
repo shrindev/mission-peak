@@ -10,11 +10,13 @@ Project lead: [Shrinjoy Ghosh](https://github.com/shrindev)
 
 No install. No account. One file, then a browser.
 
-**[Download mission-peak.html](https://github.com/shrindev/mission-peak/raw/refs/heads/main/mission-peak.html)**
+**[Download mission-peak.html](https://github.com/shrindev/mission-peak/releases/latest/download/mission-peak.html)**
 
-Save it and open it. That is the whole application. The board is stored in this browser under the key `mission-peak-v1`. It is not sent anywhere. Export a JSON backup when the list matters.
+Click that link. The browser saves `mission-peak.html` to your computer. It does not open the board on GitHub. Open the saved file in Chrome, Firefox, Safari, or Edge.
 
-The same file sits in this repository: [`mission-peak.html`](mission-peak.html).
+The same file sits in this repository as [`mission-peak.html`](mission-peak.html), so the source can be read here. That source view is not the download. The release link above is the one that saves the file.
+
+The board is stored in that browser under the key `mission-peak-v1`. It is not sent anywhere. Export a JSON backup when the list matters.
 
 ## How to use it
 
@@ -24,7 +26,7 @@ The same file sits in this repository: [`mission-peak.html`](mission-peak.html).
 4. On **Rewards**, write the stakes. Standard rewards sit with action peaks. Legendary and mythical rewards are written with the Goddess, and they are what a master peak can lock.
 5. On **Master**, write the vital work or a sequence. There is no minimum of ten.
 6. When a peak is dealt, sit with your Goddess or an Expert Master. Mark that the witness is present, name them, set the deadline they chose, and choose a reward already on the list. Then lock.
-7. Finish inside the deadline and mark it done to claim the reward, or mark it missed so the reward returns to the list.
+7. Finish inside the deadline and mark it done to claim the reward. After the deadline the reward cannot be claimed. Mark it missed and the reward returns to the list.
 8. Use **Export JSON** and **Import JSON** to move or restore the board. Import replaces what is open.
 
 If a browser refuses storage for a page opened straight from disk, the page says so. Export the JSON before you close the tab.
