@@ -1,0 +1,548 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Mission Peak</title>
+<style>
+  :root {
+    --ink: #14110c;
+    --ink-2: #1c1812;
+    --panel: #241f18;
+    --line: #3a3226;
+    --parchment: #f4ead8;
+    --muted: #b7aa96;
+    --gold: #e0b15a;
+    --gold-deep: #8d6230;
+    --clay: #c45a45;
+    --moss: #7d9a72;
+    --shadow: 0 18px 40px rgba(0,0,0,.35);
+    --sans: "Segoe UI", "Helvetica Neue", sans-serif;
+    --serif: Palatino, "Palatino Linotype", "Iowan Old Style", Georgia, serif;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; background: var(--ink); color: var(--parchment); font-family: var(--sans); }
+  body { min-height: 100vh; }
+  button, input, textarea, select { font: inherit; color: inherit; }
+  button { cursor: pointer; }
+  button:disabled { cursor: not-allowed; opacity: .45; }
+  .wrap { max-width: 1080px; margin: 0 auto; padding: 28px 18px 80px; }
+  header.top { display: flex; justify-content: space-between; gap: 18px; align-items: flex-end; flex-wrap: wrap; border-bottom: 1px solid var(--line); padding-bottom: 18px; }
+  .mark { font-family: var(--serif); letter-spacing: .18em; text-transform: uppercase; color: var(--gold); font-size: 12px; margin: 0 0 6px; }
+  h1 { font-family: var(--serif); font-weight: 500; font-size: 42px; line-height: 1; margin: 0; }
+  .lede { max-width: 46ch; color: var(--muted); margin: 10px 0 0; line-height: 1.5; }
+  .tools { display: flex; gap: 8px; flex-wrap: wrap; }
+  .btn { background: transparent; border: 1px solid var(--line); color: var(--parchment); border-radius: 999px; padding: 10px 14px; min-height: 44px; }
+  .btn:hover:not(:disabled) { border-color: var(--gold); color: var(--gold); }
+  .btn.gold { background: var(--gold); color: #1a140c; border-color: var(--gold); font-weight: 650; }
+  .btn.gold:hover:not(:disabled) { filter: brightness(1.05); }
+  .btn.danger { border-color: var(--clay); color: #f0c2b8; }
+  nav.tabs { display: flex; gap: 8px; margin: 18px 0; flex-wrap: wrap; }
+  nav.tabs button { border-radius: 999px; }
+  nav.tabs button[aria-selected="true"] { background: var(--parchment); color: var(--ink); border-color: var(--parchment); }
+  .banner { border: 1px solid var(--line); background: var(--ink-2); padding: 12px 14px; border-radius: 12px; color: var(--muted); margin-bottom: 16px; line-height: 1.45; }
+  .banner strong { color: var(--parchment); font-weight: 600; }
+  .grid { display: grid; grid-template-columns: 1fr; gap: 16px; }
+  @media (min-width: 860px) {
+    .split { display: grid; grid-template-columns: 1.1fr .9fr; gap: 16px; align-items: start; }
+  }
+  .card { background: var(--panel); border: 1px solid var(--line); border-radius: 16px; padding: 16px; }
+  .card h2 { font-family: var(--serif); font-weight: 500; font-size: 26px; margin: 0 0 6px; }
+  .hint { color: var(--muted); font-size: 14px; line-height: 1.45; margin: 0 0 12px; }
+  label { display: block; font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); margin: 10px 0 6px; }
+  input[type="text"], input[type="datetime-local"], textarea, select {
+    width: 100%; background: var(--ink); border: 1px solid var(--line); border-radius: 10px; padding: 12px; min-height: 44px;
+  }
+  textarea { min-height: 84px; resize: vertical; }
+  .row { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 12px; }
+  .count { font-variant-numeric: tabular-nums; color: var(--gold); }
+  .item { border-top: 1px solid var(--line); padding: 12px 0; }
+  .item:first-child { border-top: 0; }
+  .item-head { display: flex; justify-content: space-between; gap: 8px; align-items: center; }
+  .pill { font-size: 11px; letter-spacing: .12em; text-transform: uppercase; border: 1px solid var(--line); border-radius: 999px; padding: 4px 8px; color: var(--muted); }
+  .pill.leg { color: var(--gold); border-color: var(--gold-deep); }
+  .pill.myth { color: #f4ead8; border-color: var(--gold); }
+  .peak {
+    position: relative;
+    border-radius: 22px;
+    padding: 22px 18px 18px;
+    background:
+      radial-gradient(120% 80% at 50% -10%, rgba(224,177,90,.22), transparent 55%),
+      var(--ink-2);
+    border: 1px solid var(--gold);
+    box-shadow: var(--shadow), inset 0 0 0 1px rgba(224,177,90,.25);
+  }
+  .peak .crest {
+    width: 54px; height: 54px; margin: 0 auto 10px;
+    border: 1px solid var(--gold);
+    transform: rotate(45deg);
+    display: grid; place-items: center;
+  }
+  .peak .crest span { transform: rotate(-45deg); font-family: var(--serif); color: var(--gold); font-size: 18px; }
+  .peak h3 { font-family: var(--serif); font-size: 32px; text-align: center; margin: 8px 0; font-weight: 500; }
+  .peak .detail { text-align: center; color: var(--muted); line-height: 1.5; }
+  .clock { display: flex; justify-content: center; gap: 14px; margin: 14px 0; font-variant-numeric: tabular-nums; }
+  .clock b { display: block; font-family: var(--serif); font-size: 28px; font-weight: 500; color: var(--gold); text-align: center; }
+  .clock span { font-size: 11px; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); }
+  .late { color: var(--clay) !important; }
+  .empty { color: var(--muted); padding: 8px 0 4px; }
+  .check { display: flex; gap: 10px; align-items: flex-start; text-transform: none; letter-spacing: 0; font-size: 15px; color: var(--parchment); }
+  .check input { margin-top: 4px; width: 18px; height: 18px; }
+  .warn { color: #f0c2b8; font-size: 14px; }
+  footer.note { margin-top: 28px; color: var(--muted); font-size: 13px; line-height: 1.5; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <div>
+      <p class="mark">Local board</p>
+      <h1>Mission Peak</h1>
+      <p class="lede">Write the work. Write the reward. A single action peak is dealt only when ten missions are waiting. Deadline and reward lock only with a Goddess or an Expert Master.</p>
+    </div>
+    <div class="tools">
+      <button class="btn" id="export">Export JSON</button>
+      <button class="btn" id="import">Import JSON</button>
+      <input id="file" type="file" accept="application/json" hidden>
+    </div>
+  </header>
+  <div id="storage-note" class="banner" hidden></div>
+  <nav class="tabs" role="tablist">
+    <button class="btn" role="tab" id="tab-action" aria-selected="true">Action</button>
+    <button class="btn" role="tab" id="tab-master">Master</button>
+    <button class="btn" role="tab" id="tab-reward">Rewards</button>
+    <button class="btn" role="tab" id="tab-archive">Archive</button>
+  </nav>
+  <main id="app"></main>
+  <footer class="note">Everything on this page stays in this browser under the key <code>mission-peak-v1</code>. Nothing is uploaded. Export a JSON backup before you clear site data. One file is the whole app: save it, open it, use it.</footer>
+</div>
+<script>
+(function () {
+  var KEY = "mission-peak-v1";
+  var tab = "action";
+  var witnessOn = {};
+
+  function uid() {
+    return Math.random().toString(36).slice(2, 10) + Date.now().toString(36).slice(-4);
+  }
+  function now() { return new Date().toISOString(); }
+  function blank() { return { version: 1, missions: [], rewards: [] }; }
+  function load() {
+    try {
+      var raw = localStorage.getItem(KEY);
+      if (!raw) return blank();
+      var data = JSON.parse(raw);
+      if (!data || !Array.isArray(data.missions) || !Array.isArray(data.rewards)) return blank();
+      data.version = 1;
+      return data;
+    } catch (e) {
+      return blank();
+    }
+  }
+  var state = load();
+  function save() {
+    try {
+      localStorage.setItem(KEY, JSON.stringify(state));
+      note("");
+    } catch (e) {
+      note("This browser blocked local storage. Export JSON before you close the tab.");
+    }
+  }
+  function note(text) {
+    var el = document.getElementById("storage-note");
+    if (!text) { el.hidden = true; el.textContent = ""; return; }
+    el.hidden = false;
+    el.textContent = text;
+  }
+  function el(tag, attrs, children) {
+    var node = document.createElement(tag);
+    attrs = attrs || {};
+    Object.keys(attrs).forEach(function (k) {
+      if (k === "class") node.className = attrs[k];
+      else if (k === "text") node.textContent = attrs[k];
+      else if (k.slice(0, 2) === "on") node.addEventListener(k.slice(2).toLowerCase(), attrs[k]);
+      else node.setAttribute(k, attrs[k]);
+    });
+    (children || []).forEach(function (c) { if (c) node.appendChild(c); });
+    return node;
+  }
+  function field(labelText, control) {
+    return el("div", {}, [el("label", { text: labelText }), control]);
+  }
+  function missions(board, status) {
+    return state.missions.filter(function (m) { return m.board === board && m.status === status; });
+  }
+  function byId(list, id) {
+    return list.filter(function (x) { return x.id === id; })[0];
+  }
+  function rewardOf(id) { return byId(state.rewards, id); }
+  function openRewards(grades) {
+    return state.rewards.filter(function (r) {
+      return r.status === "open" && grades.indexOf(r.grade) !== -1;
+    });
+  }
+  function fmt(iso) {
+    if (!iso) return "—";
+    var d = new Date(iso);
+    if (isNaN(d.getTime())) return "—";
+    return d.toLocaleString();
+  }
+  function remain(iso) {
+    var ms = new Date(iso).getTime() - Date.now();
+    var late = ms < 0;
+    ms = Math.abs(ms);
+    var days = Math.floor(ms / 86400000);
+    var hours = Math.floor((ms % 86400000) / 3600000);
+    var mins = Math.floor((ms % 3600000) / 60000);
+    return { late: late, days: days, hours: hours, mins: mins };
+  }
+
+  function addMission(board, title, detail) {
+    title = title.trim();
+    if (!title) return;
+    state.missions.unshift({
+      id: uid(), board: board, title: title, detail: detail.trim(),
+      status: "pool", createdAt: now(), notes: "", witness: "", deadline: "", rewardId: ""
+    });
+    save(); render();
+  }
+  function addReward(grade, title, detail) {
+    title = title.trim();
+    if (!title) return;
+    state.rewards.unshift({
+      id: uid(), grade: grade, title: title, detail: detail.trim(),
+      status: "open", createdAt: now()
+    });
+    save(); render();
+  }
+  function assign(board) {
+    var pool = missions(board, "pool");
+    if (board === "action") {
+      if (missions("action", "peak").length || missions("action", "locked").length) return;
+      if (pool.length < 10) return;
+    } else if (!pool.length) return;
+    var pick = pool[Math.floor(Math.random() * pool.length)];
+    pick.status = "peak";
+    pick.assignedAt = now();
+    save(); render();
+  }
+  function lockMission(m, deadline, rewardId, witness) {
+    var reward = rewardOf(rewardId);
+    var when = new Date(deadline).getTime();
+    if (!m || m.status !== "peak" || !reward || reward.status !== "open") return;
+    if (!deadline || isNaN(when) || when <= Date.now()) return;
+    if (!witness || witness.trim().length < 2) return;
+    m.status = "locked";
+    m.deadline = new Date(deadline).toISOString();
+    m.rewardId = reward.id;
+    m.witness = witness.trim();
+    m.lockedAt = now();
+    reward.status = "reserved";
+    save(); render();
+  }
+  function closeMission(m, status) {
+    if (!m || m.status !== "locked") return;
+    var reward = rewardOf(m.rewardId);
+    m.status = status;
+    m.closedAt = now();
+    if (reward) reward.status = status === "done" ? "claimed" : "open";
+    save(); render();
+  }
+  function removeMission(m) {
+    if (!m || (m.status !== "pool" && m.status !== "peak")) return;
+    state.missions = state.missions.filter(function (x) { return x.id !== m.id; });
+    save(); render();
+  }
+  function removeReward(r) {
+    if (!r || r.status !== "open") return;
+    state.rewards = state.rewards.filter(function (x) { return x.id !== r.id; });
+    save(); render();
+  }
+
+  function missionEditor(m) {
+    var title = el("input", { type: "text", value: m.title });
+    var detail = el("textarea", { text: m.detail });
+    title.addEventListener("change", function () {
+      var v = title.value.trim();
+      if (!v) { title.value = m.title; return; }
+      m.title = v; save();
+    });
+    detail.addEventListener("change", function () { m.detail = detail.value.trim(); save(); });
+    var del = el("button", { class: "btn danger", type: "button", text: "Remove", onClick: function () { removeMission(m); } });
+    return el("div", { class: "item" }, [
+      field("Title", title),
+      field("Detail", detail),
+      el("div", { class: "row" }, [del])
+    ]);
+  }
+
+  function rewardEditor(r) {
+    var title = el("input", { type: "text", value: r.title });
+    var detail = el("textarea", { text: r.detail });
+    var grade = el("select", {}, [
+      el("option", { value: "standard", text: "Standard" }),
+      el("option", { value: "legendary", text: "Legendary" }),
+      el("option", { value: "mythical", text: "Mythical" })
+    ]);
+    grade.value = r.grade;
+    if (r.status !== "open") grade.disabled = true;
+    title.addEventListener("change", function () {
+      var v = title.value.trim();
+      if (!v) { title.value = r.title; return; }
+      r.title = v; save();
+    });
+    detail.addEventListener("change", function () { r.detail = detail.value.trim(); save(); });
+    grade.addEventListener("change", function () {
+      if (r.status !== "open") return;
+      r.grade = grade.value; save(); render();
+    });
+    var meta = el("div", { class: "item-head" }, [
+      el("span", { class: "pill " + (r.grade === "mythical" ? "myth" : r.grade === "legendary" ? "leg" : ""), text: r.grade + " · " + r.status })
+    ]);
+    var row = [meta, field("Title", title), field("What it is", detail)];
+    if (r.status === "open") {
+      row.push(el("div", { class: "row" }, [
+        field("Grade", grade),
+        el("button", { class: "btn danger", type: "button", text: "Remove", onClick: function () { removeReward(r); } })
+      ]));
+    }
+    return el("div", { class: "item" }, row);
+  }
+
+  function clock(iso) {
+    var r = remain(iso);
+    function cell(n, label) {
+      return el("div", {}, [el("b", { class: r.late ? "late" : "", text: String(n) }), el("span", { text: label })]);
+    }
+    var box = el("div", { class: "clock" }, [cell(r.days, "days"), cell(r.hours, "hours"), cell(r.mins, "min")]);
+    if (r.late) box.appendChild(el("div", { class: "warn", text: "Past the deadline. Mark it missed, or finish it if the witness still allows the reward." }));
+    return box;
+  }
+
+  function peakCard(m, grades) {
+    var reward = rewardOf(m.rewardId);
+    var crest = el("div", { class: "crest" }, [el("span", { text: "▲" })]);
+    var head = el("p", { class: "mark", text: m.board === "master" ? "Master peak" : "Action peak", style: "text-align:center" });
+    var title = el("h3", { text: m.title });
+    var detail = el("p", { class: "detail", text: m.detail || "No further detail." });
+    var body = [crest, head, title, detail];
+    if (m.status === "locked") {
+      body.push(clock(m.deadline));
+      body.push(el("p", { class: "hint", text: "Locked " + fmt(m.lockedAt) + ". Deadline " + fmt(m.deadline) + ". Witness: " + m.witness + ". Reward: " + (reward ? reward.title : "missing") + "." }));
+      var notes = el("textarea", { text: m.notes || "" });
+      notes.addEventListener("change", function () { m.notes = notes.value; save(); });
+      body.push(field("Working notes", notes));
+      body.push(el("div", { class: "row" }, [
+        el("button", { class: "btn gold", type: "button", text: "Mark finished", onClick: function () { closeMission(m, "done"); } }),
+        el("button", { class: "btn danger", type: "button", text: "Mark missed", onClick: function () { closeMission(m, "missed"); } })
+      ]));
+    } else {
+      var list = openRewards(grades);
+      var witness = el("input", { type: "text", value: m.witness || "", placeholder: "Name of Goddess or Expert Master" });
+      var deadline = el("input", { type: "datetime-local" });
+      var select = el("select", {}, [el("option", { value: "", text: list.length ? "Choose a written reward" : "No open reward in this grade" })]);
+      list.forEach(function (r) {
+        select.appendChild(el("option", { value: r.id, text: r.grade + " — " + r.title }));
+      });
+      var armed = !!witnessOn[m.id];
+      deadline.disabled = !armed;
+      select.disabled = !armed || !list.length;
+      var check = el("input", { type: "checkbox" });
+      check.checked = armed;
+      check.addEventListener("change", function () { witnessOn[m.id] = check.checked; render(); });
+      witness.addEventListener("change", function () { m.witness = witness.value; save(); });
+      var msg = el("p", { class: "hint", text: "Bring this peak to your Goddess, or to an Expert Master. Show them the reward list. They name the deadline and the reward. The board will not lock a self-chosen pair." });
+      var lockBtn = el("button", {
+        class: "btn gold", type: "button", text: "Lock under witness",
+        onClick: function () { lockMission(m, deadline.value, select.value, witness.value); }
+      });
+      body.push(msg);
+      body.push(el("label", { class: "check" }, [check, document.createTextNode("The witness is here with me now.")]));
+      body.push(field("Witness", witness));
+      body.push(field("Deadline they set", deadline));
+      body.push(field(m.board === "master" ? "Legendary or mythical reward" : "Reward from the list", select));
+      body.push(el("div", { class: "row" }, [
+        lockBtn,
+        el("button", { class: "btn", type: "button", text: "Return to pool", onClick: function () {
+          m.status = "pool"; m.assignedAt = ""; save(); render();
+        } })
+      ]));
+    }
+    return el("section", { class: "peak" }, body);
+  }
+
+  function composeForm(board) {
+    var title = el("input", { type: "text", placeholder: "Name the mission" });
+    var detail = el("textarea", { placeholder: "What done looks like" });
+    var btn = el("button", { class: "btn gold", type: "button", text: "Add to the board", onClick: function () {
+      addMission(board, title.value, detail.value);
+    } });
+    return el("div", {}, [field("Mission", title), field("Detail", detail), el("div", { class: "row" }, [btn])]);
+  }
+
+  function actionView() {
+    var pool = missions("action", "pool");
+    var live = missions("action", "peak").concat(missions("action", "locked"));
+    var ready = pool.length >= 10 && live.length === 0;
+    var why = live.length
+      ? "One action peak is already open. Finish it, miss it, or return it before another is dealt."
+      : "The deal needs 10 missions still in the pool. You have " + pool.length + ".";
+    var deal = el("button", {
+      class: "btn gold", type: "button", text: "Assign one peak",
+      onClick: function () { assign("action"); }
+    });
+    if (!ready) deal.disabled = true;
+    var list = el("div", {});
+    if (!pool.length) list.appendChild(el("p", { class: "empty", text: "The action pool is empty. Write missions before you ask for a peak." }));
+    pool.forEach(function (m) { list.appendChild(missionEditor(m)); });
+    var left = el("section", { class: "card" }, [
+      el("h2", { text: "Action pool" }),
+      el("p", { class: "hint" }, [
+        document.createTextNode("Waiting: "),
+        el("span", { class: "count", text: String(pool.length) }),
+        document.createTextNode(". Minimum 10 to deal one golden peak.")
+      ]),
+      composeForm("action"),
+      list
+    ]);
+    var rightKids = [
+      el("h2", { text: "The peak" }),
+      el("p", { class: "hint", text: why })
+    ];
+    if (!live.length) rightKids.push(deal);
+    live.forEach(function (m) { rightKids.push(peakCard(m, ["standard", "legendary", "mythical"])); });
+    if (live.length) rightKids.push(el("p", { class: "hint", text: "Action rewards may be standard, or a higher grade if the witness spends one." }));
+    var right = el("section", { class: "card" }, rightKids);
+    return el("div", { class: "split" }, [left, right]);
+  }
+
+  function masterView() {
+    var pool = missions("master", "pool");
+    var live = missions("master", "peak").concat(missions("master", "locked"));
+    var deal = el("button", {
+      class: "btn gold", type: "button", text: "Assign one master peak",
+      onClick: function () { assign("master"); }
+    });
+    if (!pool.length) deal.setAttribute("disabled", "disabled");
+    var list = el("div", {});
+    if (!pool.length) list.appendChild(el("p", { class: "empty", text: "No master missions yet. A sequence can be one line or many. There is no count minimum." }));
+    pool.forEach(function (m) { list.appendChild(missionEditor(m)); });
+    var peaks = el("div", {});
+    if (!live.length) peaks.appendChild(el("p", { class: "empty", text: "No master peak is open." }));
+    live.forEach(function (m) { peaks.appendChild(peakCard(m, ["legendary", "mythical"])); });
+    return el("div", { class: "split" }, [
+      el("section", { class: "card" }, [
+        el("h2", { text: "Master missions" }),
+        el("p", { class: "hint", text: "Vital work, a long sequence, or a single stake that should not sit in the ordinary pool. No limit. Assigning does not wait for ten." }),
+        composeForm("master"),
+        el("div", { class: "row" }, [deal]),
+        list
+      ]),
+      el("section", { class: "card" }, [
+        el("h2", { text: "Legendary stake" }),
+        el("p", { class: "hint", text: "A master peak locks only to a legendary or mythical reward, and only with the witness." }),
+        peaks
+      ])
+    ]);
+  }
+
+  function rewardView() {
+    function column(title, grades, blurb) {
+      var titleIn = el("input", { type: "text", placeholder: "Name the reward" });
+      var detailIn = el("textarea", { placeholder: "Write it with the Goddess. Be specific." });
+      var grade = el("select", {}, grades.map(function (g) {
+        return el("option", { value: g, text: g.charAt(0).toUpperCase() + g.slice(1) });
+      }));
+      var owned = state.rewards.filter(function (r) { return grades.indexOf(r.grade) !== -1; });
+      var list = el("div", {});
+      if (!owned.length) list.appendChild(el("p", { class: "empty", text: "None written yet." }));
+      owned.forEach(function (r) { list.appendChild(rewardEditor(r)); });
+      return el("section", { class: "card" }, [
+        el("h2", { text: title }),
+        el("p", { class: "hint", text: blurb }),
+        field("Reward", titleIn),
+        field("Detail", detailIn),
+        grades.length > 1 ? field("Grade", grade) : el("span"),
+        el("div", { class: "row" }, [
+          el("button", { class: "btn gold", type: "button", text: "Add reward", onClick: function () {
+            addReward(grades.length === 1 ? grades[0] : grade.value, titleIn.value, detailIn.value);
+          } })
+        ]),
+        list
+      ]);
+    }
+    return el("div", { class: "split" }, [
+      column("Rewards", ["standard"], "Ordinary stakes for an action peak. Edit them until one is reserved."),
+      column("Legendary and mythical", ["legendary", "mythical"], "Written with the Goddess. These are the only rewards a master peak can lock.")
+    ]);
+  }
+
+  function archiveView() {
+    var done = state.missions.filter(function (m) { return m.status === "done" || m.status === "missed"; });
+    var box = el("section", { class: "card" }, [el("h2", { text: "Closed" })]);
+    if (!done.length) box.appendChild(el("p", { class: "empty", text: "Nothing closed yet." }));
+    done.forEach(function (m) {
+      var reward = rewardOf(m.rewardId);
+      box.appendChild(el("div", { class: "item" }, [
+        el("div", { class: "item-head" }, [
+          el("strong", { text: m.title }),
+          el("span", { class: "pill", text: m.board + " · " + m.status })
+        ]),
+        el("p", { class: "hint", text: (m.detail || "") + (reward ? " Reward: " + reward.title + " (" + reward.status + ")." : "") + " Witness: " + (m.witness || "—") + ". Closed " + fmt(m.closedAt) + "." })
+      ]));
+    });
+    return box;
+  }
+
+  function render() {
+    document.getElementById("tab-action").setAttribute("aria-selected", tab === "action");
+    document.getElementById("tab-master").setAttribute("aria-selected", tab === "master");
+    document.getElementById("tab-reward").setAttribute("aria-selected", tab === "reward");
+    document.getElementById("tab-archive").setAttribute("aria-selected", tab === "archive");
+    var root = document.getElementById("app");
+    root.textContent = "";
+    var view = tab === "master" ? masterView() : tab === "reward" ? rewardView() : tab === "archive" ? archiveView() : actionView();
+    root.appendChild(view);
+  }
+
+  document.getElementById("tab-action").onclick = function () { tab = "action"; render(); };
+  document.getElementById("tab-master").onclick = function () { tab = "master"; render(); };
+  document.getElementById("tab-reward").onclick = function () { tab = "reward"; render(); };
+  document.getElementById("tab-archive").onclick = function () { tab = "archive"; render(); };
+  document.getElementById("export").onclick = function () {
+    var blob = new Blob([JSON.stringify(state, null, 2)], { type: "application/json" });
+    var a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = "mission-peak-backup.json";
+    a.click();
+    URL.revokeObjectURL(a.href);
+  };
+  document.getElementById("import").onclick = function () { document.getElementById("file").click(); };
+  document.getElementById("file").onchange = function (ev) {
+    var file = ev.target.files && ev.target.files[0];
+    ev.target.value = "";
+    if (!file) return;
+    var reader = new FileReader();
+    reader.onload = function () {
+      try {
+        var data = JSON.parse(String(reader.result));
+        if (!data || !Array.isArray(data.missions) || !Array.isArray(data.rewards)) throw new Error("shape");
+        if (!confirm("Replace the board with this backup?")) return;
+        state = data;
+        state.version = 1;
+        save();
+        render();
+      } catch (e) {
+        note("That file is not a Mission Peak backup.");
+      }
+    };
+    reader.readAsText(file);
+  };
+
+  try { localStorage.setItem(KEY + "-probe", "1"); localStorage.removeItem(KEY + "-probe"); }
+  catch (e) { note("This browser blocked local storage. Export JSON before you close the tab."); }
+  render();
+})();
+</script>
+</body>
+</html>
